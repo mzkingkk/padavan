@@ -237,10 +237,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 			showhide_div('row_s5_password', 0);
 			showhide_div('row_v2_http_host', 0);
 			showhide_div('row_v2_http_path', 0);
-			showhide_div('row_v2_httpupgrade_host', 0);
-			showhide_div('row_v2_httpupgrade_path', 0);
-			showhide_div('row_v2_splithttp_host', 0);
-			showhide_div('row_v2_splithttp_path', 0);
 			var b = document.form.ssp_type.value;
 			if (b == "ss") {
 				showhide_div('row_ss_password', 1);
@@ -298,10 +294,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 			showhide_div('row_v2_webs_path', 0);
 			showhide_div('v2_kcp_guise', 0);
 			showhide_div('v2_tcp_guise', 0);
-			showhide_div('row_v2_httpupgrade_host', 0);
-			showhide_div('row_v2_httpupgrade_path', 0);
-			showhide_div('row_v2_splithttp_host', 0);
-			showhide_div('row_v2_splithttp_path', 0);
 			var b = document.form.v2_transport.value;
 			if (b == "tcp") {
 				showhide_div('row_v2_type', 1);
@@ -330,12 +322,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 				showhide_div('row_quic_security', 1);
 				showhide_div('row_quic_key', 1);
 				showhide_div('row_quic_header', 1);
-			}else if (b == "httpupgrade") {
-				showhide_div('row_v2_httpupgrade_host', 1);
-				showhide_div('row_v2_httpupgrade_path', 1);
-			}else if (b == "splithttp") {
-				showhide_div('row_v2_splithttp_host', 1);
-				showhide_div('row_v2_splithttp_path', 1);
 			}
 		}
 		function switch_dns() {
@@ -762,12 +748,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 			document.getElementById("v2_quic_key").value = '';
 			document.getElementById("v2_quic_guise").value = 'none';
 			document.getElementById("v2_quic_security").value = 'none';
-			//v2 httpupgrade
-			document.getElementById("v2_httpupgrade_host").value = '';
-			document.getElementById("v2_httpupgrade_path").value = '';
-			//v2 splithttp
-			document.getElementById("v2_splithttp_host").value = '';
-			document.getElementById("v2_splithttp_path").value = '';
 			//sock5
 			document.getElementById("s5_password").value = '';
 			document.getElementById("s5_username").value = '';
@@ -831,12 +811,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					document.getElementById("v2_quic_guise").value = getProperty(ss, 'quic_guise', 'none');
 					document.getElementById("v2_quic_key").value = getProperty(ss, 'quic_key', '');
 					document.getElementById("v2_quic_security").value = getProperty(ss, 'quic_security', 'none');
-				}else if (transport == "httpupgrade") {
-					document.getElementById("v2_httpupgrade_host").value = getProperty(ss, 'httpupgrade_host', '');
-					document.getElementById("v2_httpupgrade_path").value = getProperty(ss, 'httpupgrade_path', '');
-				}else if (transport == "wsplithttp") {
-					document.getElementById("v2_splithttp_host").value = getProperty(ss, 'splithttp_host', '');
-					document.getElementById("v2_splithttp_path").value = getProperty(ss, 'splithttp_path', '');
 				}
 			} else if (type == "trojan") {
 				document.getElementById("ssp_insecure").value = getProperty(ss, 'insecure', 0);
@@ -1198,14 +1172,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					document.getElementById('v2_h2_host').value = ssm.host;
 					document.getElementById('v2_h2_path').value = ssm.path;
 				}
-				if (ssm.net == "httpupgrade") {
-					document.getElementById('v2_httpupgrade_host').value = ssm.host;
-					document.getElementById('v2_httpupgrade_path').value = ssm.path;
-				}
-				if (ssm.net == "splithttp") {
-					document.getElementById('v2_splithttp_host').value = ssm.host;
-					document.getElementById('v2_splithttp_path').value = ssm.path;
-				}
 				if (ssm.tls == "tls") {
 					document.getElementById('v2_tls').value = '1';
 					//document.getElementById('v2_tls').checked = true;
@@ -1272,22 +1238,18 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					document.getElementById('v2_h2_host').value = queryParam.host;
 					document.getElementById('v2_h2_path').value = queryParam.path;
 				}
-				if (queryParam.type == "httpupgrade") {
-					document.getElementById('v2_httpupgrade_host').value = queryParam.host;
-					document.getElementById('v2_httpupgrade_path').value =  queryParam.path;
-				}
-				if (queryParam.type == "splithttp") {
-					document.getElementById('v2_splithttp_host').value = queryParam.host;
-					document.getElementById('v2_splithttp_path').value =  queryParam.path;
-				}
-				if (queryParam.security == "reality") {
+
+				if (queryParam.security == "xtls" || queryParam.security == "reality") {
 					document.getElementById('v2_tls').value = '2';
 					if (queryParam.flow != undefined) {
-					    if(queryParam.flow == 'xtls-rprx-vision'){
+					    if(queryParam.flow == 'xtls-rprx-direct'){
 					    	document.getElementById('v2_flow').value = '1';
 					    }
-					    else if(queryParam.flow == 'xtls-rprx-vision-udp443'){
+					    else if(queryParam.flow == 'xtls-rprx-splice'){
 					    	document.getElementById('v2_flow').value = '2';
+					    }
+						else if(queryParam.flow == 'xtls-rprx-vision'){
+					    	document.getElementById('v2_flow').value = '3';
 					    }
 					    else
 					    {
@@ -1302,6 +1264,13 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					document.getElementById('ssp_insecure').value = 0;
 					document.getElementById('ssp_insecure').checked = false;
 					document.getElementById('ssp_tls_host').value = queryParam.sni || serverPart[0];
+				}
+				// 补充缺失的配置
+				if (queryParam.security == "reality") {
+					document.getElementById('v2_tls').value = '3';
+					document.getElementById('v2_stream_reality_fp').value = queryParam.fp;
+					document.getElementById('v2_stream_reality_pbk').value = queryParam.pbk;
+					document.getElementById('v2_stream_reality_sid').value = queryParam.sid;
 				}
 				s.innerHTML = "<font color='green'>导入Xray配置信息成功</font>";
 				return false;
@@ -1421,6 +1390,9 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					flow: document.getElementById("v2_flow").value,
 					tls_host: document.getElementById("ssp_tls_host").value,
 					coustom: "1",
+					fp: document.getElementById("v2_stream_reality_fp").value,
+					pbk: document.getElementById("v2_stream_reality_pbk").value,
+					sid: document.getElementById("v2_stream_reality_sid").value,
 				}
 				if (document.getElementById("v2_transport").value == "kcp") {
 					DataObj.kcp_guise = document.getElementById("v2_kcp_guise").value;
@@ -1442,12 +1414,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					DataObj.quic_guise = document.getElementById("v2_quic_guise").value;
 					DataObj.quic_key = document.getElementById("v2_quic_key").value;
 					DataObj.quic_security = document.getElementById("v2_quic_security").value;
-				} else if (document.getElementById("v2_transport").value == "httpupgrade") {
-					DataObj.httpupgrade_host = document.getElementById("v2_httpupgrade_host").value;
-					DataObj.httpupgrade_path = document.getElementById("v2_httpupgrade_path").value;
-				} else if (document.getElementById("v2_transport").value == "splithttp") {
-					DataObj.splithttp_host = document.getElementById("v2_splithttp_host").value;
-					DataObj.splithttp_path = document.getElementById("v2_splithttp_path").value;
 				}
 			} else if (type == "trojan") {
 				var DataObj = {
@@ -2053,8 +2019,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																	<option value="grpc">GRPC</option>
 																	<option value="h2">HTTP/2</option>
 																	<option value="quic">QUIC</option>
-																	<option value="httpupgrade">HTTPUpgrade</option>
-																	<option value="splithttp">SplitHTTP</option>
 																</select>
 															</td>
 														</tr>
@@ -2169,6 +2133,14 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																<input type="text" class="input" size="15" name="v2_quic_key" id="v2_quic_key" style="width: 200px" value="" />
 															</td>
 														</tr>
+														<tr id="row_xray_key" style="display:none;">
+															<th width="50%">streamSettings.security</th>
+															<td>
+																<input type="text" class="input" size="15" id="v2_stream_reality_fp" style="width: 200px" value="" />
+																<input type="text" class="input" size="15" id="v2_stream_reality_pbk" style="width: 200px" value="" />
+																<input type="text" class="input" size="15" id="v2_stream_reality_sid" style="width: 200px" value="" />
+															</td>
+														</tr>
 														<tr id="row_quic_header" style="display:none;">
 															<th width="50%">QUIC Header</th>
 															<td>
@@ -2182,30 +2154,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																</select>
 															</td>
 														</tr>
-														<tr id="row_v2_httpupgrade_host" style="display:none;">
-															<th width="50%">HTTPUpgrade Host</th>
-															<td>
-																<input type="text" class="input" size="15" name="v2_httpupgrade_host" id="v2_httpupgrade_host" style="width: 200px" value="<% nvram_get_x("","v2_httpupgrade_host_x_0"); %>" />
-															</td>
-														</tr>
-														<tr id="row_v2_httpupgrade_path" style="display:none;">
-															<th width="50%">HTTPUpgrade Path</th>
-															<td>
-																<input type="text" class="input" size="15" name="v2_httpupgrade_path" id="v2_httpupgrade_path" style="width: 200px" value="<% nvram_get_x("","v2_httpupgrade_path_x_0"); %>" />
-															</td>
-														</tr>
-														<tr id="row_v2_splithttp_host" style="display:none;">
-															<th width="50%">SplitHTTP Host</th>
-															<td>
-																<input type="text" class="input" size="15" name="v2_splithttp_host" id="v2_splithttp_host" style="width: 200px" value="<% nvram_get_x("","v2_splithttp_host_x_0"); %>" />
-															</td>
-														</tr>
-														<tr id="row_v2_splithttp_path" style="display:none;">
-															<th width="50%">SplitHTTP Path</th>
-															<td>
-																<input type="text" class="input" size="15" name="v2_splithttp_path" id="v2_splithttp_path" style="width: 200px" value="<% nvram_get_x("","v2_splithttp_path_x_0"); %>" />
-															</td>
-														</tr>
 														<tr id="row_ssp_insecure" style="display:none;">
 															<th width="50%">allowInsecure</th>
 															<td>
@@ -2213,27 +2161,29 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_v2_tls" style="display:none;">
-															<th width="50%">TLS/Reality</th>
+															<th width="50%">TLS/XTLS</th>
 															<td>
 																<select name="v2_tls" id="v2_tls" class="input" style="width: 200px;">
 																	<option value="0">未配置</option>
 																	<option value="1">tls</option>
-																	<option value="2">Reality</option>
+																	<option value="2">xtls</option>
+																	<option value="3">reality</option>
 																</select>
 															</td>
 														</tr>
 														<tr id="row_v2_flow" style="display:none;">
-															<th width="50%">Reality flow</th>
+															<th width="50%">XTLS flow</th>
 															<td>
 																<select name="v2_flow" id="v2_flow" class="input" style="width: 200px;">
 																	<option value="0">未配置</option>
-																	<option value="1">xtls-rprx-vision</option>
-																	<option value="2">xtls-rprx-vision-udp443</option>
+																	<option value="1">xtls-rprx-direct</option>
+																	<option value="2">xtls-rprx-splice</option>
+																	<option value="3">xtls-rprx-vision</option>
 																</select>
 															</td>
 														</tr>
 														<tr id="row_tj_tls_host" style="display:none;">
-															<th width="50%">TLS Host</th>
+															<th width="50%">TLS/XTLS Host</th>
 															<td>
 																<input type="text" class="input" size="15" name="ssp_tls_host" id="ssp_tls_host" style="width: 200px" value="">
 															</td>

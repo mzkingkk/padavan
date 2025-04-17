@@ -34,7 +34,6 @@ download:
 ifeq ($(CT_TARGET),mipsel-linux-musl)
 	@if [ ! -f $(CT_PREFIX)/$(CT_TARGET)/sysroot/usr/include/sys/queue.h ]; then \
 		echo "Installing sys/queue.h..."; \
-		curl -fSsL -o $(CT_PREFIX)/$(CT_TARGET)/sysroot/usr/include/sys/queue.h \
-			"https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=misc/sys/queue.h;hb=HEAD" ; \
+               cp -f $(TOPDIR)/queue.h $(TOPDIR)/toolchain-mipsel/mipsel-linux-musl/sysroot/usr/include/sys/; \
 	fi
 endif

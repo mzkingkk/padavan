@@ -46,7 +46,7 @@ local xray = {
 					users = {
 						{
 							id = server.vmess_id,
-							flow = (server.flow == '1') and "xtls-rprx-vision" or ((server.flow == '2') and "xtls-rprx-vision-udp443" or ""),
+							flow = (server.flow == '1') and "xtls-rprx-direct" or ((server.flow == '2') and "xtls-rprx-splice") or ((server.flow == '3') and "xtls-rprx-vision") or "",
 							level = tonumber(server.alter_id),
 							encryption = server.security
 						}
@@ -57,14 +57,14 @@ local xray = {
 	-- 底层传输配置
 		streamSettings = {
 			network = server.transport,
-			security = (server.tls == '1') and "tls" or ((server.tls == '2') and "reality" or "none"),
+			security = (server.tls == '1') and "tls" or ((server.tls == '2') and "xtls") or ((server.tls == '3') and "reality") or "none",
 			tlsSettings = (server.tls == '1') and 
 			{
 				allowInsecure = (server.insecure ~= "0") and true or false,
 				serverName=server.tls_host
 			} or nil,
 
-			realitySettings = (server.tls == '2') and
+			xtlsSettings = (server.tls == '2') and
 			{
 				allowInsecure = (server.insecure ~= "0") and true or false,
 				serverName = server.tls_host
@@ -98,8 +98,16 @@ local xray = {
 					Host = server.ws_host
 				} or nil,
 			} or nil,
+			realitySettings = (server.tls == '3') and (server.sid ~= nil) and {
+				fingerprint = server.fp,
+				serverName = server.server,
+				publicKey = server.pbk,
+				shortId = server.sid
+			} or nil,
 			grpcSettings = (server.transport == "grpc") and (server.grpc_path ~= nil) and {
-				serviceName = server.grpc_path
+				serviceName = server.grpc_path,
+				multiMode = true,
+				idle_timeout = 30
 			} or nil,
 			httpSettings = (server.transport == "h2") and {
 				path = server.h2_path,
@@ -111,19 +119,7 @@ local xray = {
 				header = {
 					type = server.quic_guise
 				}
-			} or nil,
-			httpupgradeSettings = (server.transport == "httpupgrade") and (server.httpupgrade_path ~= nil or server.httpupgrade_host ~= nil) and {
-				path = server.httpupgrade_path,
-				headers = (server.httpupgrade_host ~= nil) and {
-					Host = server.httpupgrade_host
-				} or nil,
-			} or nil,
-			splithttpSettings = (server.transport == "splithttp") and (server.splithttp_path ~= nil or server.splithttp_host ~= nil) and {
-				path = server.splithttp_path,
-				headers = (server.splithttp_host ~= nil) and {
-					Host = server.splithttp_host
-				} or nil,
-			} or nil,
+			} or nil
 		},
 		mux = {
 			enabled = (server.mux == "1") and true or false,
@@ -132,13 +128,13 @@ local xray = {
 	},
 
 	-- 额外传出连接
-	outboundDetour = {
+	outboundDetour = (server.tls ~= '3') and {
 		{
 			protocol = "freedom",
 			tag = "direct",
 			settings = { keep = "" }
 		}
-	}
+	} or nil
 }
 
 print(cjson.encode(xray))
